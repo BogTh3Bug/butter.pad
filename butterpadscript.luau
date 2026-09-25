@@ -1,336 +1,344 @@
--- Script Path: game:GetService("StarterPlayer").StarterPlayerScripts.ButterShopUI
--- Took 0.01s to decompile.
--- Executor: Potassium (v2.5.0)
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
--- Decompiled with Potassium's decompiler.
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
 
-local Players = game:GetService("Players");
-local ReplicatedStorage = game:GetService("ReplicatedStorage");
-local Workspace = game:GetService("Workspace");
-local LocalPlayer = Players.LocalPlayer;
-local ButterRemotes = ReplicatedStorage:WaitForChild("ButterRemotes");
-local BuyUpgrade = ButterRemotes:WaitForChild("BuyUpgrade");
-local SyncUpgrades = ButterRemotes:WaitForChild("SyncUpgrades");
-local Rebirth = ButterRemotes:WaitForChild("Rebirth");
-local u1 = {
-    WalkSpeed = {
-        name = "Fast Feet",
-        desc = "Walk faster around the butter path!",
-        maxLevel = 10,
-        baseCost = 50,
-        costMultiplier = 1.5,
-        icon = "👟"
-    },
-    PointsMultiplier = {
-        name = "Butter Boost",
-        desc = "Get more points every time you step on butter!",
-        maxLevel = 10,
-        baseCost = 75,
-        costMultiplier = 1.6,
-        icon = "🧈"
-    }
-};
-local u2 = { "WalkSpeed", "PointsMultiplier" };
+-- Remote Events
+local butterRemotes = ReplicatedStorage:WaitForChild("ButterRemotes")
+local boostEvent = butterRemotes:WaitForChild("BuyUpgrade")
+local rebirthEvent = butterRemotes:WaitForChild("Rebirth")
 
-local function getCost(p3, p4) -- Line: 42
-    -- upvalues: u1 (copy)
-    local v5 = u1[p3];
+-- Create ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "AutoFarmGui"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = playerGui
 
-    return math.floor(v5.baseCost * v5.costMultiplier ^ p4);
-end;
+-- Main Container Frame
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Size = UDim2.new(0, 220, 0, 260)
+mainFrame.Position = UDim2.new(0.05, 0, 0.3, 0)
+mainFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
+mainFrame.Draggable = true -- Allows the GUI to be dragged around
+mainFrame.Parent = screenGui
 
-local ScreenGui = Instance.new("ScreenGui");
-ScreenGui.Name = "ButterShopUI";
-ScreenGui.ResetOnSpawn = false;
-ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui");
-local Frame = Instance.new("Frame");
-Frame.Size = UDim2.new(0, 450, 0, 440);
-Frame.Position = UDim2.new(0.5, -225, 0.5, -220);
-Frame.BackgroundColor3 = Color3.fromRGB(255, 250, 230);
-Frame.BackgroundTransparency = 0.05;
-Frame.BorderSizePixel = 0;
-Frame.Visible = false;
-Frame.Parent = ScreenGui;
-local UICorner = Instance.new("UICorner");
-UICorner.CornerRadius = UDim.new(0, 16);
-UICorner.Parent = Frame;
-local UIStroke = Instance.new("UIStroke");
-UIStroke.Color = Color3.fromRGB(220, 180, 40);
-UIStroke.Thickness = 3;
-UIStroke.Parent = Frame;
-local TextLabel = Instance.new("TextLabel");
-TextLabel.Size = UDim2.new(1, -60, 0, 50);
-TextLabel.Position = UDim2.new(0, 20, 0, 10);
-TextLabel.BackgroundTransparency = 1;
-TextLabel.Text = "🧈 Butter Shop";
-TextLabel.TextColor3 = Color3.fromRGB(100, 70, 0);
-TextLabel.TextScaled = true;
-TextLabel.Font = Enum.Font.SourceSansBold;
-TextLabel.TextXAlignment = Enum.TextXAlignment.Left;
-TextLabel.Parent = Frame;
-local TextButton = Instance.new("TextButton");
-TextButton.Size = UDim2.new(0, 40, 0, 40);
-TextButton.Position = UDim2.new(1, -50, 0, 15);
-TextButton.BackgroundColor3 = Color3.fromRGB(255, 120, 120);
-TextButton.Text = "×";
-TextButton.TextColor3 = Color3.fromRGB(255, 255, 255);
-TextButton.TextScaled = true;
-TextButton.Font = Enum.Font.SourceSansBold;
-TextButton.BorderSizePixel = 0;
-TextButton.Parent = Frame;
-local UICorner2 = Instance.new("UICorner");
-UICorner2.CornerRadius = UDim.new(0, 8);
-UICorner2.Parent = TextButton;
-local Frame2 = Instance.new("Frame");
-Frame2.Size = UDim2.new(1, -30, 0, 360);
-Frame2.Position = UDim2.new(0, 15, 0, 65);
-Frame2.BackgroundTransparency = 1;
-Frame2.Parent = Frame;
-local UIListLayout = Instance.new("UIListLayout");
-UIListLayout.Padding = UDim.new(0, 12);
-UIListLayout.Parent = Frame2;
-local u6 = {};
-local u7 = {
-    WalkSpeed = 0,
-    PointsMultiplier = 0
-};
+-- Rounded corners for Main Frame
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 8)
+corner.Parent = mainFrame
 
-for _, v in ipairs(u2) do
-    local v8 = u1[v];
-    local Frame3 = Instance.new("Frame");
-    Frame3.Size = UDim2.new(1, 0, 0, 110);
-    Frame3.BackgroundColor3 = Color3.fromRGB(255, 245, 200);
-    Frame3.BorderSizePixel = 0;
-    Frame3.Parent = Frame2;
-    local UICorner3 = Instance.new("UICorner");
-    UICorner3.CornerRadius = UDim.new(0, 12);
-    UICorner3.Parent = Frame3;
-    local UIStroke2 = Instance.new("UIStroke");
-    UIStroke2.Color = Color3.fromRGB(200, 170, 30);
-    UIStroke2.Thickness = 1.5;
-    UIStroke2.Parent = Frame3;
-    local TextLabel2 = Instance.new("TextLabel");
-    TextLabel2.Size = UDim2.new(0, 60, 0, 60);
-    TextLabel2.Position = UDim2.new(0, 12, 0.5, -30);
-    TextLabel2.BackgroundTransparency = 1;
-    TextLabel2.Text = v8.icon;
-    TextLabel2.TextScaled = true;
-    TextLabel2.Font = Enum.Font.SourceSansBold;
-    TextLabel2.Parent = Frame3;
-    local TextLabel3 = Instance.new("TextLabel");
-    TextLabel3.Size = UDim2.new(1, -200, 0, 30);
-    TextLabel3.Position = UDim2.new(0, 85, 0, 10);
-    TextLabel3.BackgroundTransparency = 1;
-    TextLabel3.Text = v8.name;
-    TextLabel3.TextColor3 = Color3.fromRGB(100, 70, 0);
-    TextLabel3.TextScaled = true;
-    TextLabel3.Font = Enum.Font.SourceSansBold;
-    TextLabel3.TextXAlignment = Enum.TextXAlignment.Left;
-    TextLabel3.Parent = Frame3;
-    local TextLabel4 = Instance.new("TextLabel");
-    TextLabel4.Size = UDim2.new(1, -200, 0, 24);
-    TextLabel4.Position = UDim2.new(0, 85, 0, 38);
-    TextLabel4.BackgroundTransparency = 1;
-    TextLabel4.Text = v8.desc;
-    TextLabel4.TextColor3 = Color3.fromRGB(120, 100, 30);
-    TextLabel4.TextScaled = true;
-    TextLabel4.Font = Enum.Font.SourceSans;
-    TextLabel4.TextXAlignment = Enum.TextXAlignment.Left;
-    TextLabel4.Parent = Frame3;
-    local TextLabel5 = Instance.new("TextLabel");
-    TextLabel5.Size = UDim2.new(1, -200, 0, 24);
-    TextLabel5.Position = UDim2.new(0, 85, 0, 64);
-    TextLabel5.BackgroundTransparency = 1;
-    TextLabel5.Text = "Level: 0 / " .. v8.maxLevel;
-    TextLabel5.TextColor3 = Color3.fromRGB(80, 120, 30);
-    TextLabel5.TextScaled = true;
-    TextLabel5.Font = Enum.Font.SourceSansBold;
-    TextLabel5.TextXAlignment = Enum.TextXAlignment.Left;
-    TextLabel5.Parent = Frame3;
-    local TextButton2 = Instance.new("TextButton");
-    TextButton2.Size = UDim2.new(0, 110, 0, 40);
-    TextButton2.Position = UDim2.new(1, -125, 0.5, -20);
-    TextButton2.BackgroundColor3 = Color3.fromRGB(80, 200, 80);
-    TextButton2.Text = "Buy";
-    TextButton2.TextColor3 = Color3.fromRGB(255, 255, 255);
-    TextButton2.TextScaled = true;
-    TextButton2.Font = Enum.Font.SourceSansBold;
-    TextButton2.BorderSizePixel = 0;
-    TextButton2.Parent = Frame3;
-    local UICorner4 = Instance.new("UICorner");
-    UICorner4.CornerRadius = UDim.new(0, 8);
-    UICorner4.Parent = TextButton2;
-    u6[v] = {
-        card = Frame3,
-        levelLabel = TextLabel5,
-        buyButton = TextButton2
-    };
-    TextButton2.MouseButton1Click:Connect(function() -- Line: 202
-        -- upvalues: BuyUpgrade (copy), v (copy)
-        BuyUpgrade:FireServer(v);
-    end);
-end;
+-- Title
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Size = UDim2.new(1, 0, 0, 40)
+titleLabel.BackgroundTransparency = 1
+titleLabel.Text = "Auto Panel"
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleLabel.TextSize = 18
+titleLabel.Font = Enum.Font.SourceSansBold
+titleLabel.Parent = mainFrame
 
-local Frame3 = Instance.new("Frame");
-Frame3.Size = UDim2.new(1, 0, 0, 100);
-Frame3.BackgroundColor3 = Color3.fromRGB(240, 220, 255);
-Frame3.BorderSizePixel = 0;
-Frame3.Parent = Frame2;
-local UICorner3 = Instance.new("UICorner");
-UICorner3.CornerRadius = UDim.new(0, 12);
-UICorner3.Parent = Frame3;
-local UIStroke2 = Instance.new("UIStroke");
-UIStroke2.Color = Color3.fromRGB(160, 100, 220);
-UIStroke2.Thickness = 2;
-UIStroke2.Parent = Frame3;
-local TextLabel2 = Instance.new("TextLabel");
-TextLabel2.Size = UDim2.new(0, 50, 0, 50);
-TextLabel2.Position = UDim2.new(0, 12, 0.5, -25);
-TextLabel2.BackgroundTransparency = 1;
-TextLabel2.Text = "🌟";
-TextLabel2.TextScaled = true;
-TextLabel2.Font = Enum.Font.SourceSansBold;
-TextLabel2.Parent = Frame3;
-local TextLabel3 = Instance.new("TextLabel");
-TextLabel3.Size = UDim2.new(1, -200, 0, 28);
-TextLabel3.Position = UDim2.new(0, 75, 0, 12);
-TextLabel3.BackgroundTransparency = 1;
-TextLabel3.Text = "Rebirth";
-TextLabel3.TextColor3 = Color3.fromRGB(100, 50, 150);
-TextLabel3.TextScaled = true;
-TextLabel3.Font = Enum.Font.SourceSansBold;
-TextLabel3.TextXAlignment = Enum.TextXAlignment.Left;
-TextLabel3.Parent = Frame3;
-local TextLabel4 = Instance.new("TextLabel");
-TextLabel4.Size = UDim2.new(1, -200, 0, 22);
-TextLabel4.Position = UDim2.new(0, 75, 0, 40);
-TextLabel4.BackgroundTransparency = 1;
-TextLabel4.Text = "Reset stats & grow your plot!";
-TextLabel4.TextColor3 = Color3.fromRGB(130, 100, 160);
-TextLabel4.TextScaled = true;
-TextLabel4.Font = Enum.Font.SourceSans;
-TextLabel4.TextXAlignment = Enum.TextXAlignment.Left;
-TextLabel4.Parent = Frame3;
-local TextLabel5 = Instance.new("TextLabel");
-TextLabel5.Size = UDim2.new(1, -200, 0, 22);
-TextLabel5.Position = UDim2.new(0, 75, 0, 64);
-TextLabel5.BackgroundTransparency = 1;
-TextLabel5.Text = "Rebirths: 0";
-TextLabel5.TextColor3 = Color3.fromRGB(100, 60, 140);
-TextLabel5.TextScaled = true;
-TextLabel5.Font = Enum.Font.SourceSansBold;
-TextLabel5.TextXAlignment = Enum.TextXAlignment.Left;
-TextLabel5.Parent = Frame3;
-local TextButton2 = Instance.new("TextButton");
-TextButton2.Size = UDim2.new(0, 110, 0, 40);
-TextButton2.Position = UDim2.new(1, -125, 0.5, -20);
-TextButton2.BackgroundColor3 = Color3.fromRGB(170, 100, 220);
-TextButton2.Text = "Rebirth";
-TextButton2.TextColor3 = Color3.fromRGB(255, 255, 255);
-TextButton2.TextScaled = true;
-TextButton2.Font = Enum.Font.SourceSansBold;
-TextButton2.BorderSizePixel = 0;
-TextButton2.Parent = Frame3;
-local UICorner4 = Instance.new("UICorner");
-UICorner4.CornerRadius = UDim.new(0, 8);
-UICorner4.Parent = TextButton2;
-TextButton2.MouseButton1Click:Connect(function() -- Line: 280
-    -- upvalues: Rebirth (copy)
-    Rebirth:FireServer();
-end);
+-- UI List Layout to align buttons automatically
+local UIListLayout = Instance.new("UIListLayout")
+UIListLayout.Parent = mainFrame
+UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+UIListLayout.Padding = UDim.new(0, 10)
+UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
-local function updateCards() -- Line: 285
-    -- upvalues: LocalPlayer (copy), u2 (copy), u1 (copy), u6 (copy), u7 (ref), TextLabel5 (copy), TextButton2 (copy)
-    local leaderstats = LocalPlayer:FindFirstChild("leaderstats");
-    local v9 = 0;
+-- Helper function to create styled buttons
+local function createButton(name, text, layoutOrder)
+	local button = Instance.new("TextButton")
+	button.Name = name
+	button.Size = UDim2.new(0.85, 0, 0, 40)
+	button.BackgroundColor3 = Color3.fromRGB(50, 50, 65)
+	button.TextColor3 = Color3.fromRGB(255, 255, 255)
+	button.Text = text
+	button.Font = Enum.Font.SourceSansSemibold
+	button.TextSize = 16
+	button.LayoutOrder = layoutOrder
+	button.AutoButtonColor = true
+	button.Parent = mainFrame
+	
+	local btnCorner = Instance.new("UICorner")
+	btnCorner.CornerRadius = UDim.new(0, 6)
+	btnCorner.Parent = button
+	
+	return button
+end
 
-    if leaderstats then
-        local v10 = leaderstats:FindFirstChild("Butter Points");
+-- Create the 4 Buttons
+local boostButton = createButton("BoostButton", "Boost", 1)
+local rebirthButton = createButton("RebirthButton", "Rebirth", 2)
+local autoBoostButton = createButton("AutoBoostButton", "Auto Boost: OFF", 3)
+local autoRebirthButton = createButton("AutoRebirthButton", "Auto Rebirth: OFF", 4)
 
-        if v10 then
-            v9 = v10.Value;
-        end;
-    end;
+-- Toggle States
+local autoBoostEnabled = false
+local autoRebirthEnabled = false
 
-    for _, v in ipairs(u2) do
-        local v11 = u1[v];
-        local v12 = u6[v];
+----------------------------------------------------
+-- Button Actions
+----------------------------------------------------
 
-        if v12 then
-            local v13 = u7[v];
-            v12.levelLabel.Text = "Level: " .. v13 .. " / " .. v11.maxLevel;
+-- Single Boost
+boostButton.MouseButton1Click:Connect(function()
+	boostEvent:FireServer("PointsMultiplier")
+end)
 
-            if v11.maxLevel <= v13 then
-                v12.buyButton.Text = "MAX";
-                v12.buyButton.BackgroundColor3 = Color3.fromRGB(200, 200, 200);
-                v12.buyButton.AutoButtonColor = false;
-            else
-                local v14 = u1[v];
-                local math_floor_ret = math.floor(v14.baseCost * v14.costMultiplier ^ v13);
-                v12.buyButton.Text = tostring(math_floor_ret) .. " BP";
+-- Single Rebirth
+rebirthButton.MouseButton1Click:Connect(function()
+	rebirthEvent:FireServer()
+end)
 
-                if math_floor_ret <= v9 then
-                    v12.buyButton.BackgroundColor3 = Color3.fromRGB(80, 200, 80);
-                    v12.buyButton.AutoButtonColor = true;
-                else
-                    v12.buyButton.BackgroundColor3 = Color3.fromRGB(200, 100, 100);
-                    v12.buyButton.AutoButtonColor = false;
-                end;
-            end;
-        end;
-    end;
+-- Auto Boost Toggle
+autoBoostButton.MouseButton1Click:Connect(function()
+	autoBoostEnabled = not autoBoostEnabled
+	
+	if autoBoostEnabled then
+		autoBoostButton.Text = "Auto Boost: ON"
+		autoBoostButton.BackgroundColor3 = Color3.fromRGB(46, 139, 87)
+	else
+		autoBoostButton.Text = "Auto Boost: OFF"
+		autoBoostButton.BackgroundColor3 = Color3.fromRGB(50, 50, 65)
+	end
+end)
 
-    if leaderstats then
-        leaderstats = leaderstats:FindFirstChild("Rebirths");
-    end;
+-- Auto Rebirth Toggle
+autoRebirthButton.MouseButton1Click:Connect(function()
+	autoRebirthEnabled = not autoRebirthEnabled
+	
+	if autoRebirthEnabled then
+		autoRebirthButton.Text = "Auto Rebirth: ON"
+		autoRebirthButton.BackgroundColor3 = Color3.fromRGB(46, 139, 87)
+	else
+		autoRebirthButton.Text = "Auto Rebirth: OFF"
+		autoRebirthButton.BackgroundColor3 = Color3.fromRGB(50, 50, 65)
+	end
+end)
 
-    local v15 = leaderstats and leaderstats.Value or 0;
-    TextLabel5.Text = "Rebirths: " .. v15;
-    local math_floor_ret = math.floor(1000 * 2 ^ v15);
-    TextButton2.Text = tostring(math_floor_ret) .. " BP";
+----------------------------------------------------
+-- Loops (Runs every second)
+----------------------------------------------------
 
-    if math_floor_ret <= v9 then
-        TextButton2.BackgroundColor3 = Color3.fromRGB(170, 100, 220);
-        TextButton2.AutoButtonColor = true;
+task.spawn(function()
+	while true do
+		if autoBoostEnabled then
+			boostEvent:FireServer("PointsMultiplier")
+		end
+		task.wait(1)
+	end
+end)
 
-        return;
-    end;
+task.spawn(function()
+	while true do
+		if autoRebirthEnabled then
+			rebirthEvent:FireServer()
+		end
+		task.wait(1)
+	end
+end)
 
-    TextButton2.BackgroundColor3 = Color3.fromRGB(120, 80, 160);
-    TextButton2.AutoButtonColor = false;
-end;
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local PathfindingService = game:GetService("PathfindingService")
 
-SyncUpgrades.OnClientEvent:Connect(function(p16) -- Line: 336
-    -- upvalues: u7 (ref), updateCards (copy)
-    u7 = p16;
-    updateCards();
-end);
-local leaderstats = LocalPlayer:WaitForChild("leaderstats");
-leaderstats:WaitForChild("Butter Points").Changed:Connect(function() -- Line: 344
-    -- upvalues: updateCards (copy)
-    updateCards();
-end);
-leaderstats:WaitForChild("Rebirths").Changed:Connect(function() -- Line: 350
-    -- upvalues: updateCards (copy)
-    updateCards();
-end);
-local ShopBooth = Workspace:WaitForChild("ShopBooth", 10);
+local player = Players.LocalPlayer
+local mouse = player:GetMouse()
 
-if ShopBooth then
-    local Torso = ShopBooth:WaitForChild("Torso", 5);
-    local v17 = Torso and Torso:WaitForChild("OpenShop", 5);
+-- State Variables
+local recordedPoints = {}
+local isRecording = false
+local isWalking = false
 
-    if v17 then
-        v17.Triggered:Connect(function() -- Line: 361
-            -- upvalues: Frame (copy), updateCards (copy)
-            Frame.Visible = true;
-            updateCards();
-        end);
-    end;
-end;
+--------------------------------------------------------------------------------
+-- 1. CREATE GUI ELEMENTS PROGRAMMATICALLY
+--------------------------------------------------------------------------------
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "WaypointGui"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = player:WaitForChild("PlayerGui")
 
-TextButton.MouseButton1Click:Connect(function() -- Line: 369
-    -- upvalues: Frame (copy)
-    Frame.Visible = false;
-end);
-updateCards();
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Size = UDim2.new(0, 220, 0, 190)
+mainFrame.Position = UDim2.new(0, 20, 0.5, -95)
+mainFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
+mainFrame.Draggable = true
+mainFrame.Parent = screenGui
+
+local uiCorner = Instance.new("UICorner")
+uiCorner.CornerRadius = UDim.new(0, 8)
+uiCorner.Parent = mainFrame
+
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Size = UDim2.new(1, 0, 0, 30)
+titleLabel.BackgroundTransparency = 1
+titleLabel.Text = "Waypoint Navigator"
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleLabel.TextSize = 14
+titleLabel.Font = Enum.Font.SourceSansBold
+titleLabel.Parent = mainFrame
+
+local recordBtn = Instance.new("TextButton")
+recordBtn.Name = "RecordBtn"
+recordBtn.Size = UDim2.new(0.9, 0, 0, 30)
+recordBtn.Position = UDim2.new(0.05, 0, 0, 35)
+recordBtn.BackgroundColor3 = Color3.fromRGB(50, 150, 250)
+recordBtn.Text = "Record Points: OFF"
+recordBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+recordBtn.Font = Enum.Font.SourceSans
+recordBtn.TextSize = 13
+recordBtn.Parent = mainFrame
+Instance.new("UICorner", recordBtn).CornerRadius = UDim.new(0, 5)
+
+local toggleWalkBtn = Instance.new("TextButton")
+toggleWalkBtn.Name = "ToggleWalkBtn"
+toggleWalkBtn.Size = UDim2.new(0.9, 0, 0, 30)
+toggleWalkBtn.Position = UDim2.new(0.05, 0, 0, 70)
+toggleWalkBtn.BackgroundColor3 = Color3.fromRGB(46, 204, 113)
+toggleWalkBtn.Text = "Start Walking"
+toggleWalkBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleWalkBtn.Font = Enum.Font.SourceSans
+toggleWalkBtn.TextSize = 13
+toggleWalkBtn.Parent = mainFrame
+Instance.new("UICorner", toggleWalkBtn).CornerRadius = UDim.new(0, 5)
+
+local clearBtn = Instance.new("TextButton")
+clearBtn.Name = "ClearBtn"
+clearBtn.Size = UDim2.new(0.9, 0, 0, 25)
+clearBtn.Position = UDim2.new(0.05, 0, 0, 105)
+clearBtn.BackgroundColor3 = Color3.fromRGB(231, 76, 60)
+clearBtn.Text = "Clear Points (0)"
+clearBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+clearBtn.Font = Enum.Font.SourceSans
+clearBtn.TextSize = 12
+clearBtn.Parent = mainFrame
+Instance.new("UICorner", clearBtn).CornerRadius = UDim.new(0, 5)
+
+local statusLabel = Instance.new("TextLabel")
+statusLabel.Size = UDim2.new(0.9, 0, 0, 40)
+statusLabel.Position = UDim2.new(0.05, 0, 0, 140)
+statusLabel.BackgroundTransparency = 1
+statusLabel.Text = "Status: Idle"
+statusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+statusLabel.TextSize = 12
+statusLabel.Font = Enum.Font.SourceSansItalic
+statusLabel.TextWrapped = true
+statusLabel.Parent = mainFrame
+
+--------------------------------------------------------------------------------
+-- 2. HELPER & NAVIGATION LOGIC
+--------------------------------------------------------------------------------
+local function updateUI()
+	clearBtn.Text = "Clear Points (" .. #recordedPoints .. ")"
+end
+
+local function walkToPoint(character, targetPosition)
+	local humanoid = character:FindFirstChildOfClass("Humanoid")
+	local rootPart = character:FindFirstChild("HumanoidRootPart")
+	if not humanoid or not rootPart then return false end
+
+	local path = PathfindingService:CreatePath({
+		AgentRadius = 2,
+		AgentHeight = 5,
+		AgentCanJump = true
+	})
+
+	local success, _ = pcall(function()
+		path:ComputeAsync(rootPart.Position, targetPosition)
+	end)
+
+	if success and path.Status == Enum.PathStatus.Success then
+		local waypoints = path:GetWaypoints()
+		for _, waypoint in ipairs(waypoints) do
+			if not isWalking then return false end
+
+			if waypoint.Action == Enum.PathWaypointAction.Jump then
+				humanoid.Jump = true
+			end
+
+			humanoid:MoveTo(waypoint.Position)
+			
+			-- Wait for movement completion or timeout
+			local reached = humanoid.MoveToFinished:Wait()
+			if not reached then break end
+		end
+		return true
+	end
+	return false
+end
+
+--------------------------------------------------------------------------------
+-- 3. EVENT HANDLERS
+--------------------------------------------------------------------------------
+
+-- Toggle Recording Mode
+recordBtn.MouseButton1Click:Connect(function()
+	isRecording = not isRecording
+	if isRecording then
+		recordBtn.Text = "Record Points: ON"
+		recordBtn.BackgroundColor3 = Color3.fromRGB(230, 126, 34)
+	else
+		recordBtn.Text = "Record Points: OFF"
+		recordBtn.BackgroundColor3 = Color3.fromRGB(50, 150, 250)
+	end
+end)
+
+-- Click in game world to save Vector3 coordinates
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+	if gameProcessed or not isRecording then return end
+
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		if mouse.Target then
+			local hitPosition = mouse.Hit.Position
+			table.insert(recordedPoints, hitPosition)
+			statusLabel.Text = "Added Point: " .. string.format("%.1f, %.1f, %.1f", hitPosition.X, hitPosition.Y, hitPosition.Z)
+			updateUI()
+		end
+	end
+end)
+
+-- Clear Saved Waypoints
+clearBtn.MouseButton1Click:Connect(function()
+	recordedPoints = {}
+	updateUI()
+	statusLabel.Text = "Status: Waypoints Cleared"
+end)
+
+-- Toggle Navigation Loop
+toggleWalkBtn.MouseButton1Click:Connect(function()
+	if isWalking then
+		isWalking = false
+		toggleWalkBtn.Text = "Start Walking"
+		toggleWalkBtn.BackgroundColor3 = Color3.fromRGB(46, 204, 113)
+		statusLabel.Text = "Status: Stopped"
+	else
+		if #recordedPoints == 0 then
+			statusLabel.Text = "Status: No points recorded!"
+			return
+		end
+
+		isWalking = true
+		toggleWalkBtn.Text = "Stop Walking"
+		toggleWalkBtn.BackgroundColor3 = Color3.fromRGB(231, 76, 60)
+
+		task.spawn(function()
+			while isWalking do
+				local character = player.Character
+				if not character then break end
+
+				for index, point in ipairs(recordedPoints) do
+					if not isWalking then break end
+					statusLabel.Text = "Walking to Point " .. index .. "/" .. #recordedPoints
+					walkToPoint(character, point)
+					task.wait(0.2)
+				end
+			end
+		end)
+	end
+end)
